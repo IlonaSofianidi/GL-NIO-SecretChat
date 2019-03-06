@@ -221,6 +221,7 @@ public class NioServer {
             List<ByteBuffer> queue = pendingData.get(socketChannel);
             while (!queue.isEmpty()) {
                 ByteBuffer buf = queue.get(0);
+                buf.rewind();
 
                 String s = new String(buf.array());
                 int receiverId = MessageUtils.extractUserId(s);
@@ -234,6 +235,7 @@ public class NioServer {
                     String clientMsg = String.format("From:%d/%s", senderId, s);
                     ByteBuffer msgInfo = ByteBuffer.wrap(clientMsg.getBytes());
                     receiver.write(msgInfo);
+
                 } else {
                     //write to all clients except sender
                     for (Map.Entry<Integer, SocketChannel> clientInfoEntry : sockets.entrySet()) {
@@ -248,6 +250,7 @@ public class NioServer {
                             System.out.println(serverMsg);
                             ByteBuffer msg = ByteBuffer.wrap(messageInfo.getBytes());
                             receiverSocketChannel.write(msg);
+
                         }
                     }
                 }
